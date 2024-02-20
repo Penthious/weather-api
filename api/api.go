@@ -30,9 +30,6 @@ func Start() {
 }
 
 func server(log *zerolog.Logger, appName string) error {
-	_, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
 	log.Info().Str("status", "").Msg("startup")
 
 	shutdown := make(chan os.Signal, 1)

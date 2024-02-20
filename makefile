@@ -1,3 +1,2 @@
-key := ""
 run:
-	WEATHER_API_KEY=key go run main.go
+	WEATHER_API_KEY=${WEATHER_API_KEY} go run main.go

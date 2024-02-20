@@ -1,14 +1,16 @@
 package weather_api_handler
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/penthious/weather-api/external/weather_api"
+	"github.com/rs/zerolog"
 	"net/http"
 	"strconv"
 )
 
-type Handlers struct{}
+type Handlers struct {
+	Log *zerolog.Logger
+}
 
 func (h Handlers) GetWeather(ctx echo.Context) error {
 	latParam := ctx.QueryParam("lat")
@@ -16,19 +18,20 @@ func (h Handlers) GetWeather(ctx echo.Context) error {
 
 	lat, err := strconv.ParseFloat(latParam, 64)
 	if err != nil {
-		ctx.Error(fmt.Errorf("lat must be number"))
-		return ctx.String(http.StatusBadRequest, "")
+		h.Log.Error().Err(err).Msg("lat query parse")
+		return ctx.String(http.StatusBadRequest, "lat query must be number")
 	}
 
 	long, err := strconv.ParseFloat(longParam, 64)
 	if err != nil {
-		return fmt.Errorf("long must be number")
+		h.Log.Error().Err(err).Msg("long query parse")
+		return ctx.String(http.StatusBadRequest, "long query must be number")
 	}
 
 	weather, err := weather_api.GetWeather(lat, long)
-
 	if err != nil {
-		return fmt.Errorf("getWeatherApi: %w", err)
+		h.Log.Error().Err(err).Msg("get weather api failed")
+		return ctx.String(http.StatusInternalServerError, "Something broke")
 	}
 
 	var perceivedTemp string

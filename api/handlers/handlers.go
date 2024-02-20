@@ -30,19 +30,7 @@ func APIMux(cfg APIMuxConfig) http.Handler {
 		},
 	}))
 
-	eh := errorHandler{Log: cfg.Log}
-
-	e.HTTPErrorHandler = eh.handle
-
-	v1.Routes(e)
+	v1.Routes(e, cfg.Log)
 
 	return e
-}
-
-type errorHandler struct {
-	Log *zerolog.Logger
-}
-
-func (eh errorHandler) handle(err error, c echo.Context) {
-	c.Logger().Error(err)
 }
